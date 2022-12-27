@@ -4,11 +4,14 @@ import numba as nb
 
 class Encrypt:
 
-    def __init__(self, plaintext: str, h: int, k: int, n: int) -> None:
+    def __init__(self, plaintext: str, h1: int, k1: int, h2: int, k2: int, n1: int, n2: int) -> None:
         self.plaintext = plaintext
-        self.h = h
-        self.k = k
-        self.n = n
+        self.h1 = h1
+        self.k1 = k1
+        self.h2 = h2
+        self.k2 = k2
+        self.n1 = n1
+        self.n2 = n2
 
     @staticmethod
     @nb.njit()
@@ -37,3 +40,48 @@ class Encrypt:
         cantor_points = self._cantor_inverse(ascii_table)
 
         return cantor_points
+
+    @staticmethod
+    @nb.njit()
+    def _translate(cantor_points: np.ndarray, h1: int, k1: int, h2: int, k2: int) -> np.ndarray:
+        for i in nb.prange(cantor_points.shape[0]):
+            if i % 2 == 0:
+                cantor_points[i][0] = cantor_points[i][0] + h1
+                cantor_points[i][1] = cantor_points[i][1] + k1
+            else:
+                cantor_points[i][0] = cantor_points[i][0] + h2
+                cantor_points[i][1] = cantor_points[i][1] + k2
+
+        return cantor_points
+
+    @staticmethod
+    def _rotate(cantor_points: np.ndarray, n1: int, n2: int) -> np.ndarray:
+        theta_1 = n1 * np.pi / 2
+        R1 = [[int(np.cos(theta_1)), int(-np.sin(theta_1))],
+              [int(np.sin(theta_1)), int(np.cos(theta_1))]]
+
+        theta_2 = n2 * np.pi / 2
+        R2 = [[int(np.cos(theta_2)), int(-np.sin(theta_2))],
+              [int(np.sin(theta_2)), int(np.cos(theta_2))]]
+
+        for i in range(cantor_points.shape[0]):
+            if i % 2 == 0:
+                cantor_points[i] = np.matmul(cantor_points[i], R1)
+            else:
+                cantor_points[i] = np.matmul(cantor_points[i], R2)
+
+        return cantor_points
+
+    def _encrypt(self) -> np.ndarray:
+        cantor_points = self.get_cantor_points()
+        cantor_points = self._translate(
+            cantor_points=cantor_points, h1=self.h1, k1=self.k1, h2=self.h2, k2=self.k2)
+        cantor_points = self._rotate(
+            cantor_points=cantor_points, n1=self.n1, n2=self.n2)
+
+        return cantor_points
+
+    def get_encrypted_points(self) -> np.ndarray:
+        encrypted_points = self._encrypt()
+
+        return encrypted_points
