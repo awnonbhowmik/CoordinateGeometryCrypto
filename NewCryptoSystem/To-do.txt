@@ -1,0 +1,11 @@
+1. Implement a modified version of Diffie-Hellman key exchange protocol with parity check so that we can use the set of integers, instead of the set of natural numbers. 
+
+2. Implement decryption algorithm with Cantor Pairing Function and by using the private parameters extracted from parity added shared private key integer. 
+
+3. Further extend to Unicode, instead of limiting the algorithms to ASCII.
+
+4. Perform differential analysis of the increase in confusion added in ciphertexts compared to the original published verison.
+
+5. Compare performance of Koblitz encoding-decoding algorithm and Cantor Pairing Function. 
+
+6. Extend from simple transformations to complex and hypercomplex domain if possible.
