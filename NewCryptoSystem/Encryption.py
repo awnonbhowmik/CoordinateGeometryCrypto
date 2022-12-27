@@ -4,13 +4,14 @@ import numba as nb
 
 class Encrypt:
 
-    def __init__(self, plaintext: str, h1: int, k1: int, h2: int, k2: int, n: int) -> None:
+    def __init__(self, plaintext: str, h1: int, k1: int, h2: int, k2: int, n1: int, n2: int) -> None:
         self.plaintext = plaintext
         self.h1 = h1
         self.k1 = k1
         self.h2 = h2
         self.k2 = k2
-        self.n = n
+        self.n1 = n1
+        self.n2 = n2
 
     @staticmethod
     @nb.njit()
@@ -54,13 +55,20 @@ class Encrypt:
         return cantor_points
 
     @staticmethod
-    def _rotate(cantor_points: np.ndarray, n: int) -> np.ndarray:
-        theta = n * np.pi / 2
-        R = [[int(np.cos(theta)), int(-np.sin(theta))],
-             [int(np.sin(theta)), int(np.cos(theta))]]
+    def _rotate(cantor_points: np.ndarray, n1: int, n2: int) -> np.ndarray:
+        theta_1 = n1 * np.pi / 2
+        R1 = [[int(np.cos(theta_1)), int(-np.sin(theta_1))],
+              [int(np.sin(theta_1)), int(np.cos(theta_1))]]
+
+        theta_2 = n2 * np.pi / 2
+        R2 = [[int(np.cos(theta_2)), int(-np.sin(theta_2))],
+              [int(np.sin(theta_2)), int(np.cos(theta_2))]]
 
         for i in range(cantor_points.shape[0]):
-            cantor_points[i] = np.matmul(cantor_points[i], R)
+            if i % 2 == 0:
+                cantor_points[i] = np.matmul(cantor_points[i], R1)
+            else:
+                cantor_points[i] = np.matmul(cantor_points[i], R2)
 
         return cantor_points
 
@@ -68,9 +76,10 @@ class Encrypt:
         cantor_points = self.get_cantor_points()
         cantor_points = self._translate(
             cantor_points=cantor_points, h1=self.h1, k1=self.k1, h2=self.h2, k2=self.k2)
-        encrypted_points = self._rotate(cantor_points=cantor_points, n=self.n)
+        cantor_points = self._rotate(
+            cantor_points=cantor_points, n1=self.n1, n2=self.n2)
 
-        return encrypted_points
+        return cantor_points
 
     def get_encrypted_points(self) -> np.ndarray:
         encrypted_points = self._encrypt()
