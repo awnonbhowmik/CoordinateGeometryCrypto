@@ -85,3 +85,28 @@ class Encrypt:
         encrypted_points = self._encrypt()
 
         return encrypted_points
+
+    def get_shared_key(self) -> str:
+        parameters = [self.h1, self.k1, self.h2, self.k2, self.n1, self.n2]
+
+        parity_bits = []
+
+        for index, param in enumerate(parameters):
+            if param >= 0:
+                parameters[index] = str(param)
+                parity_bits.append(str(1))
+            else:
+                param = param * (-1)
+                parameters[index] = str(param)
+                parity_bits.append(str(2))
+
+        shared_key = []
+
+        for parity, parameter in zip(parity_bits, parameters):
+            shared_key.append(parity)
+            shared_key.append(str(len(parameter)))
+            shared_key.append(parameter)
+
+        key = "".join(shared_key)
+
+        return key
