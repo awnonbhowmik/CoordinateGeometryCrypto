@@ -24,8 +24,6 @@ class Decrypt:
 
         while True:
 
-            print(digit_bit_indices)
-
             try:
                 current_digit_bit_index = current_digit_bit_index + current_digit_bit_value + 2
 
@@ -33,6 +31,7 @@ class Decrypt:
                     key_list[current_digit_bit_index])
 
                 digit_bit_indices.append(current_digit_bit_index)
+
             except:
                 break
 
@@ -42,7 +41,7 @@ class Decrypt:
 
         digit_bit_values = [int(key_list[x]) for x in digit_bit_indices]
 
-        parameter = []
+        parameters = []
 
         parity = 0
 
@@ -51,16 +50,15 @@ class Decrypt:
             param_end = index + skip + 1
 
             param = key_list[param_start:param_end]
-            print(param)
             param = "".join(param)
             param = int(param)
 
             if parity_bit_values[parity] == 1:
-                parameter.append(param)
+                parameters.append(param)
             else:
                 param = param * (-1)
-                parameter.append(param)
+                parameters.append(param)
 
             parity = parity + 1
 
-        self.h1, self.k1, self.h2, self.k2, self.n1, self.n2 = parameter
+        self.h1, self.k1, self.h2, self.k2, self.n1, self.n2 = parameters
