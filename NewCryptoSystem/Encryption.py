@@ -30,8 +30,8 @@ class Encrypt:
 
         for i in nb.prange(cantor_points.shape[0]):
             n = np.floor((-1 + np.sqrt(1 + 8*ascii_table[i])) / 2)
-            cantor_points[i][0] = ascii_table[i] - (0.5)*n*(n+1)
-            cantor_points[i][1] = n - cantor_points[i][0]
+            cantor_points[i][1] = ascii_table[i] - (0.5)*n*(n+1)
+            cantor_points[i][0] = n - cantor_points[i][1]
 
         return cantor_points
 
